@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, CalendarClock, Calendar, Megaphone, CalendarDays } from "lucide-react";
+import { BookOpen, CalendarClock, Calendar, CalendarDays } from "lucide-react";
 
 type Menu = {
   title: string;
@@ -15,7 +15,6 @@ export default function MenuSection() {
     { title: "Jadwal", icon: <Calendar className="w-7 h-7 text-amber-500" />, href: "/schedule", bgColor: "bg-amber-50" },
     { title: "Kelas", icon: <BookOpen className="w-7 h-7 text-sky-600" />, href: "/kelas", bgColor: "bg-sky-50" },
     { title: "Log Absen", icon: <CalendarClock className="w-7 h-7 text-rose-600" />, href: "/log-absen", bgColor: "bg-rose-50" },
-    { title: "Pengumuman", icon: <Megaphone className="w-7 h-7 text-gray-800" />, href: "/pengumuman", bgColor: "bg-gray-100" },
     { title: "Kaldik", icon: <CalendarDays className="w-7 h-7 text-sky-500" />, href: "/kaldik", bgColor: "bg-sky-50" },
   ];
 

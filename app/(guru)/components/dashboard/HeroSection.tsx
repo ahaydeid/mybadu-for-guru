@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { User2 } from "lucide-react";
 
 export default function HeroSection() {
@@ -38,12 +37,11 @@ export default function HeroSection() {
 
   return (
     <section suppressHydrationWarning={true} className="relative w-full bg-linear-to-r from-sky-700 via-sky-600 to-sky-400 rounded-b-4xl shadow-md pt-2 pb-16 px-6 z-10 overflow-visible">
-      {/* Top - School name */}
-      <div suppressHydrationWarning={true} className="flex items-center gap-3 border-b border-white pb-1 mb-2">
-        <div suppressHydrationWarning={true} className="bg-white rounded-full shadow-md flex items-center justify-center p-0.5">
-          <Image src="/img/albadar.png" alt="Logo SMK Al Badar Dangdeur" width={28} height={28} className="rounded-sm" priority />
-        </div>
-        <h1 suppressHydrationWarning={true} className="text-lg font-semibold text-white tracking-wide drop-shadow-md">SMK Al Badar Dangdeur</h1>
+      <div suppressHydrationWarning={true} className="flex items-center gap-2 pb-2 mb-4 border-b border-white/20 w-fit">
+        <h1 suppressHydrationWarning={true} className="text-[15px] font-black text-white tracking-widest uppercase drop-shadow-md flex items-center">
+          MY<span className="text-yellow-400">BADU</span>
+          <span className="ml-3 text-[9px] font-bold px-2 py-0.5 bg-white/20 rounded-full border border-white/30 backdrop-blur-sm tracking-widest text-white shadow-sm">GURU</span>
+        </h1>
       </div>
 
       {/* Bottom - Greeting & User */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { User, KeyRound, Bell, HelpCircle, LogOut, Settings, ArrowLeft } from "lucide-react";
+import { User, KeyRound, HelpCircle, LogOut, Settings, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const ProfilePage = () => {
@@ -23,12 +23,6 @@ const ProfilePage = () => {
       name: "Ganti Kata Sandi",
       icon: <KeyRound className="w-5 h-5 text-gray-600" />,
       action: () => router.push("/profile/change-password"),
-    },
-    {
-      id: 3,
-      name: "Notifikasi",
-      icon: <Bell className="w-5 h-5 text-gray-600" />,
-      action: () => router.push("/profile/notifications"),
     },
     {
       id: 4,

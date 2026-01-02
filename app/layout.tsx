@@ -6,8 +6,8 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "My Badar - Mobile",
-  description: "Aplikasi manajemen absensi guru & siswa",
+  title: "MyBadu - For Guru",
+  description: "Aplikasi manajemen absensi guru",
 };
 
 export const viewport: Viewport = {
