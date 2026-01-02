@@ -52,7 +52,7 @@ const Page = () => {
       {/* Header */}
       <div>
         <div className="flex items-center justify-center mb-10">
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">Agenda Mengajar</h1>
+          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">Kalender Pendidikan</h1>
         </div>
 
         <div className="flex items-center justify-end gap-3">

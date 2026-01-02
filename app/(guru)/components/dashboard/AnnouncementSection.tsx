@@ -31,29 +31,30 @@ const announcements: Announcement[] = [
 
 export default function AnnouncementSection() {
   return (
-    <section className="px-3 py-6 bg-white ">
+    <section suppressHydrationWarning={true} className="px-3 py-6 bg-white ">
       {/* Heading */}
-      <h2 className="text-lg font-bold text-gray-900 mb-3">Pengumuman</h2>
+      <h2 suppressHydrationWarning={true} className="text-lg font-bold text-gray-900 mb-3">Pengumuman</h2>
 
       {/* Card List */}
-      <div className="divide-y space-y-2 divide-gray-200">
+      <div suppressHydrationWarning={true} className="divide-y space-y-2 divide-gray-200">
         {announcements.map((item) => (
           <div
+            suppressHydrationWarning={true}
             key={item.id}
             className="flex w-full cursor-pointer hover:bg-gray-50 border-2 border-gray-100 rounded transition-all duration-200"
             onClick={() => console.log("Clicked:", item.title)} // ganti dengan aksi sesungguhnya nanti
           >
             {/* Left: Image (if exists) */}
             {item.image ? (
-              <div className="w-1/3 shrink-0 p-2 relative">
+              <div suppressHydrationWarning={true} className="w-1/3 shrink-0 p-2 relative">
                 <Image src={item.image} alt={item.title} width={150} height={100} className="object-cover w-full h-full max-h-32" unoptimized />
               </div>
             ) : null}
 
             {/* Right: Text Content */}
-            <div className={`py-2 pr-3 pl-1 ${item.image ? "w-2/3" : "w-full"} flex flex-col`}>
-              <h3 className="text-base font-semibold text-gray-900 line-clamp-2 mb-1">{item.title}</h3>
-              <p className="text-sm text-gray-600 line-clamp-2">{item.description}</p>
+            <div suppressHydrationWarning={true} className={`py-2 pr-3 pl-1 ${item.image ? "w-2/3" : "w-full"} flex flex-col`}>
+              <h3 suppressHydrationWarning={true} className="text-base font-semibold text-gray-900 line-clamp-2 mb-1">{item.title}</h3>
+              <p suppressHydrationWarning={true} className="text-sm text-gray-600 line-clamp-2">{item.description}</p>
             </div>
           </div>
         ))}

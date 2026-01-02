@@ -55,8 +55,9 @@ export default function CalendarGrid({ currentMonth, today, schedules }: Props) 
       <div className="grid grid-cols-7 gap-2">
         {days.map((date, index) => {
           const isCurrentMonth = date.month() === currentMonth.month();
-          const isToday = date.isSame(today, "day");
+          if (!isCurrentMonth) return <div key={index} />;
 
+          const isToday = date.isSame(today, "day");
           const formattedDate = date.format("YYYY-MM-DD");
           const hasSchedule = schedules.some((s) => s.date === formattedDate);
 
@@ -65,13 +66,13 @@ export default function CalendarGrid({ currentMonth, today, schedules }: Props) 
               key={index}
               onClick={() => openModal(date)}
               className={`relative rounded-xl p-3 text-sm font-medium transition-all border text-left
-                ${isCurrentMonth ? "bg-white hover:shadow-md" : "bg-gray-100 text-gray-400"}
+                bg-white hover:shadow-md
                 ${isToday ? "border-sky-500 text-sky-700 font-bold" : "border-gray-200"}
               `}
             >
               {/* Garis vertikal tanda jadwal */}
               {hasSchedule && <div className="absolute left-0 top-1 bottom-1 w-1 rounded-full bg-sky-500"></div>}
-              {isCurrentMonth ? date.date() : ""}
+              {date.date()}
             </button>
           );
         })}
