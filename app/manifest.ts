@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Aplikasi manajemen absensi guru",
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#0284c7",
+    background_color: "#8B2FFC",
+    theme_color: "#8B2FFC",
     icons: [
       {
         src: "/icons/192x192.png",
