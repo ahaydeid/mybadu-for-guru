@@ -2,12 +2,20 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+import AppFlow from "./components/AppFlow";
+
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "MyBadu - For Guru",
+  title: "MyBadar - For Guru",
   description: "Aplikasi manajemen absensi guru",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "MyBadar Guru",
+  },
 };
 
 export const viewport: Viewport = {
@@ -22,6 +30,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="id" suppressHydrationWarning={true}>
       <head>
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         {/* Anti-Extension Injection Scrub Script */}
         <script
           dangerouslySetInnerHTML={{
@@ -71,7 +80,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         suppressHydrationWarning={true} 
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-50 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100`}
       >
-        <div suppressHydrationWarning={true}>{children}</div>
+        <AppFlow>{children}</AppFlow>
       </body>
     </html>
   );

@@ -2,88 +2,125 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center">
-      <main className="w-full max-w-md px-4 sm:px-6 pt-12 pb-6">
-        <header className="flex items-center gap-3 px-2 mb-8 justify-center">
-          <div className="flex items-center gap-3">
-            {/* Gambar logo di sisi kiri */}
-            <Image src="/img/albadar.png" alt="Logo Al Badar" width={48} height={48} className="object-contain rounded-md" priority />
-
-            {/* Teks di kanan logo */}
-            <div className="leading-tight text-center sm:text-left">
-              <div className="text-xl font-extrabold text-sky-600">My Badar</div>
-              <div className="text-lg font-semibold text-gray-900">SMKS Al Badar Dangdeur</div>
-            </div>
+    <div className="min-h-screen bg-white flex flex-col items-center relative overflow-hidden font-sans pt-12 pb-8 px-6">
+      {/* Decorative Background Elements (Lightweight SVGs) */}
+      <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-[#8B2FFC]/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-[-5%] left-[-5%] w-72 h-72 bg-[#0284c7]/5 rounded-full blur-3xl" />
+      
+      <main 
+        className={`w-full max-w-md z-10 transition-all duration-1000 transform flex-grow flex flex-col justify-center ${
+          isMounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        {/* Brand Header */}
+        <div className="flex flex-col items-center mb-5">
+          <div className="relative w-20 h-20 mb-4 drop-shadow-sm">
+            <Image 
+              src="/img/albadar.png" 
+              alt="Logo Al Badar" 
+              fill 
+              className="object-contain" 
+              sizes="80px"
+              priority 
+            />
           </div>
-        </header>
+          <div className="text-center group">
+            <h1 className="text-3xl font-black tracking-tight text-zinc-900">
+              <span className="text-[#8B2FFC]">My </span>
+              <span>Badar</span>
+            </h1>
+            <p className="text-sm font-bold text-zinc-400 uppercase tracking-widest mt-1">
+              For Guru
+            </p>
+          </div>
+        </div>
 
-        <section className="bg-white rounded-lg shadow border border-gray-100 mt-6 p-6 sm:p-8">
-          <h1 className="text-center text-2xl font-extrabold tracking-tight text-gray-800 mb-6">Login</h1>
+        {/* Login Card */}
+        <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-zinc-100 px-8 pb-8 py-4 shadow-2xl shadow-zinc-200/50">
+          <div className="mb-8 text-center">
+            <h2 className="text-2xl font-extrabold text-zinc-900">Login</h2>
+          </div>
 
-          <form className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email
+          <form className="space-y-8">
+            {/* Kode Guru Field */}
+            <div className="space-y-1">
+              <label htmlFor="email" className="block text-sm font-medium text-zinc-500 ml-1">
+                Kode Guru
               </label>
-              <input
-                id="email"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-150"
-                placeholder="example@mail.id"
-                type="email"
-                autoComplete="email"
-              />
+              <div className="relative group">
+                <input
+                  id="email"
+                  type="text"
+                  placeholder="Masukkan kode guru"
+                  className="w-full bg-transparent border-0 border-b border-zinc-200 py-3 text-zinc-900 font-medium placeholder:text-zinc-300 focus:border-[#8B2FFC] transition-all outline-none rounded-none text-sm"
+                />
+              </div>
             </div>
 
-            <div className="relative">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            {/* Password Field */}
+            <div className="space-y-1">
+              <label htmlFor="password" className="block text-sm font-medium text-zinc-500 ml-1">
                 Password
               </label>
-              <input
-                id="password"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 pr-12 transition duration-150"
-                placeholder="********"
-                type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((s) => !s)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 pt-8 text-gray-500 hover:text-sky-600 transition"
-                aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
-              >
-                {showPassword ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.046.165-2.05.471-3.002M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
-              </button>
+              <div className="relative group">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="w-full bg-transparent border-0 border-b border-zinc-200 pr-10 py-3 text-zinc-900 font-medium placeholder:text-zinc-300 focus:border-[#8B2FFC] transition-all outline-none rounded-none text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
 
-            <div>
-              <button type="button" className="w-full bg-sky-600 text-white font-bold rounded-full py-3 shadow-md hover:bg-sky-700 transition duration-200">
-                Login
-              </button>
-            </div>
-
-            <div className="text-sm italic text-center text-gray-500">
-              <Link href="https://ahadi.my.id" className="hover:text-sky-600 transition">
+            {/* Forgot Password */}
+            <div className="flex justify-end pt-0.5">
+              <Link href="#" className="text-xs text-[#A855F7] hover:text-[#8B2FFC] transition-colors">
                 Lupa password?
               </Link>
             </div>
+
+            {/* Submit Button */}
+            <div className="pt-2 flex flex-col items-center gap-6">
+              <button
+                type="submit"
+                className="w-full bg-purple-600 text-white font-bold py-4 rounded-full flex items-center justify-center hover:bg-[#9333EA] active:scale-[0.98] transition-all"
+              >
+                Masuk
+              </button>
+              
+              <p className="text-xs font-medium text-zinc-500">
+                Guru Baru? <Link href="#" className="text-[#A855F7] hover:underline">Permohonan Akun</Link>
+              </p>
+            </div>
           </form>
-        </section>
+        </div>
       </main>
+
+      {/* Footer info - Sticky to original bottom */}
+      <footer className="w-full max-w-md z-10 text-center mt-auto pt-8">
+        <p className="text-zinc-400 text-xs font-medium">
+          SMKS Al Badar Dangdeur &copy; {new Date().getFullYear()} - by Hadi
+        </p>
+      </footer>
     </div>
   );
 }

@@ -21,6 +21,7 @@ export default function AbsenGuruPage() {
   // ⬇⬇⬇ TAMBAHAN: KAMERA & SELFIE
   const [photo, setPhoto] = useState<string | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -170,11 +171,17 @@ export default function AbsenGuruPage() {
   };
 
   // ⬇⬇⬇ FUNGSI KAMERA
-  const startCamera = async () => {
+  const startCamera = async (mode: "user" | "environment" = facingMode) => {
+    // Stop previous stream if any
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+    }
+
     setIsCameraOpen(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: "user", width: { ideal: 720 }, height: { ideal: 720 } } 
+        video: { facingMode: mode, width: { ideal: 720 }, height: { ideal: 720 } } 
       });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -184,6 +191,12 @@ export default function AbsenGuruPage() {
       showToast("Gagal mengakses kamera.", "error");
       setIsCameraOpen(false);
     }
+  };
+
+  const toggleCamera = () => {
+    const newMode = facingMode === "user" ? "environment" : "user";
+    setFacingMode(newMode);
+    startCamera(newMode);
   };
 
   const stopCamera = () => {
@@ -299,7 +312,7 @@ export default function AbsenGuruPage() {
               </button>
               <button
                 suppressHydrationWarning={true}
-                onClick={startCamera}
+                onClick={() => startCamera()}
                 className="flex-1 font-bold py-3 rounded-2xl flex items-center justify-center gap-2 bg-zinc-800 hover:bg-black text-white transition-all active:scale-95 shadow-sm"
               >
                 <Camera suppressHydrationWarning={true} className="w-5 h-5" />
@@ -385,7 +398,7 @@ export default function AbsenGuruPage() {
               autoPlay 
               playsInline 
               muted 
-              className="min-w-full min-h-full object-cover -scale-x-100" 
+              className={`min-w-full min-h-full object-cover ${facingMode === "user" ? "-scale-x-100" : ""}`} 
             />
             <canvas suppressHydrationWarning={true} ref={canvasRef} className="hidden" />
           </div>
@@ -399,7 +412,7 @@ export default function AbsenGuruPage() {
             >
               <div suppressHydrationWarning={true} className="w-14 h-14 rounded-full bg-white" />
             </button>
-            <button suppressHydrationWarning={true} onClick={startCamera} className="p-4 bg-white/10 rounded-full text-white">
+            <button suppressHydrationWarning={true} onClick={toggleCamera} className="p-4 bg-white/10 rounded-full text-white">
               <RefreshCw suppressHydrationWarning={true} className="w-6 h-6" />
             </button>
           </div>
