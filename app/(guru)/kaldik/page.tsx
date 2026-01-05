@@ -1,75 +1,155 @@
 "use client";
 
-import { useState } from "react";
-import dayjs from "dayjs";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import dayjs, { Dayjs } from "dayjs";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import CalendarGrid from "./comps/CalendarGrid";
+import { CalendarEvent } from "./comps/AgendaModal";
+import { useAuth } from "@/context/AuthContext";
+import { api } from "@/lib/api";
 
-const Page = () => {
-  const [currentMonth, setCurrentMonth] = useState(dayjs());
-  const today = dayjs();
+export default function Page() {
+    const { token } = useAuth();
+    const [events, setEvents] = useState<CalendarEvent[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [currentMonth, setCurrentMonth] = useState<Dayjs>(dayjs());
+    const today = dayjs();
 
-  const prevMonth = () => setCurrentMonth(currentMonth.subtract(1, "month"));
-  const nextMonth = () => setCurrentMonth(currentMonth.add(1, "month"));
+    const fetchKaldik = async () => {
+        if (!token) return;
+        
+        try {
+            setIsLoading(true);
+            const res = await api.getKaldik(token);
+            if (res.success && Array.isArray(res.data)) {
+                setEvents(res.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch kaldik:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-  const schedules = [
-    {
-      id: 1,
-      date: "2025-11-10",
-      time: "07:30 - 09:00",
-      kelas: "12 MPLB 1",
-      materi: "Etika Profesi",
-      detail: "Diskusi studi kasus dan latihan soal.",
-    },
-    {
-      id: 4,
-      date: "2025-11-10",
-      time: "09:45 - 10:30",
-      kelas: "12 MPLB 4",
-      materi: "Etika Digital",
-      detail: "Diskusi studi kasus dan latihan praktik.",
-    },
-    {
-      id: 2,
-      date: "2025-11-13",
-      time: "10:00 - 11:30",
-      kelas: "11 AKL 2",
-      materi: "Akuntansi Dasar",
-      detail: "Pengantar jurnal umum dan transaksi.",
-    },
-    {
-      id: 3,
-      date: "2025-11-14",
-      time: "08:00 - 09:30",
-      kelas: "10 OTKP 1",
-      materi: "Korespondensi",
-      detail: "Praktik penulisan surat resmi.",
-    },
-  ];
+    useEffect(() => {
+        fetchKaldik();
+    }, [token]);
 
-  return (
-    <section className="w-full min-h-screen bg-linear-to-br from-sky-50 to-white px-4 py-6">
-      {/* Header */}
-      <div>
-        <div className="flex items-center justify-center mb-10">
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">Kalender Pendidikan</h1>
-        </div>
+    const prevMonth = () =>
+        setCurrentMonth((prev) => prev.subtract(1, "month"));
+    const nextMonth = () => setCurrentMonth((prev) => prev.add(1, "month"));
 
-        <div className="flex items-center justify-end gap-3">
-          <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-sky-100 text-sky-600 transition">
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <p className="text-lg font-semibold text-gray-800">{currentMonth.format("MMMM YYYY")}</p>
-          <button onClick={nextMonth} className="p-2 rounded-lg hover:bg-sky-100 text-sky-600 transition">
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
+    return (
+        <>
+            <section className="w-full min-h-screen px-4 md:px-24 pt-6 pb-20">
+                <div>
+                    <div className="flex items-center justify-center mb-10">
+                        <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+                            Kalender Akademik
+                        </h1>
+                    </div>
 
-      {/* Calendar Grid */}
-      <CalendarGrid currentMonth={currentMonth} today={today} schedules={schedules} />
-    </section>
-  );
-};
+                    <div className="flex items-center justify-end gap-2 mb-4">
+                        <button
+                            onClick={prevMonth}
+                            className="p-2 rounded-lg hover:bg-sky-100 text-sky-600 transition"
+                        >
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
 
-export default Page;
+                        <p className="text-lg font-semibold text-sky-700">
+                            {currentMonth.format("MMMM YYYY")}
+                        </p>
+
+                        <button
+                            onClick={nextMonth}
+                            className="p-2 rounded-lg hover:bg-sky-100 text-sky-600 transition"
+                        >
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+
+                {isLoading && events.length === 0 ? (
+                   <div className="flex justify-center items-center h-64">
+                       <Loader2 className="w-10 h-10 animate-spin text-sky-600" />
+                   </div>
+                ) : (
+                    <CalendarGrid
+                        currentMonth={currentMonth}
+                        today={today}
+                        events={events}
+                    />
+                )}
+
+                <div className="mt-10">
+                    {(() => {
+                        const bulanEvents = events.filter(
+                            (e) =>
+                                dayjs(e.tanggal).month() ===
+                                    currentMonth.month() &&
+                                dayjs(e.tanggal).year() === currentMonth.year()
+                        );
+
+                        if (bulanEvents.length === 0) {
+                            return (
+                                <p className="text-sm text-gray-500">
+                                    Tidak ada kegiatan untuk bulan ini.
+                                </p>
+                            );
+                        }
+
+                        const grouped: Record<
+                            string,
+                            { tanggal: number[]; kategori: string | null }
+                        > = {};
+
+                        bulanEvents.forEach((e) => {
+                            const key = e.kegiatan ?? "Tidak ada kegiatan";
+                            const tgl = dayjs(e.tanggal).date();
+
+                            if (!grouped[key]) {
+                                grouped[key] = {
+                                    tanggal: [],
+                                    kategori: e.kategori ?? null,
+                                };
+                            }
+
+                            grouped[key].tanggal.push(tgl);
+                        });
+
+                        return Object.entries(grouped)
+                            .sort((a, b) => a[1].tanggal[0] - b[1].tanggal[0])
+                            .map(([kegiatan, info]) => {
+                                const tanggalStr = info.tanggal
+                                    .sort((a, b) => a - b)
+                                    .join(", ");
+                                const bulanStr = currentMonth.format("MMMM");
+
+                                return (
+                                    <div
+                                        key={kegiatan}
+                                        className="text-sm mb-1"
+                                    >
+                                        <span className="font-semibold text-gray-700">
+                                            {tanggalStr} {bulanStr}
+                                        </span>
+                                        {": "}
+                                        <span
+                                            className={
+                                                info.kategori === "LIBUR"
+                                                    ? "text-red-500 font-medium"
+                                                    : "text-gray-700"
+                                            }
+                                        >
+                                            {kegiatan}
+                                        </span>
+                                    </div>
+                                );
+                            });
+                    })()}
+                </div>
+            </section>
+        </>
+    );
+}

@@ -1,10 +1,13 @@
 "use client";
 
 import { ReactElement, useEffect, useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import AttendanceHeader from "./AttendanceHeader";
 import AttendanceList from "./AttendanceList";
 import AttendanceButtons from "./AttendanceButtons";
-import ConfirmSave from "@components/ui/ConfirmSave";
+import ConfirmDialog from "@/app/(guru)/components/ui/ConfirmDialog";
+import { useAuth } from "@/context/AuthContext";
+import { api } from "@/lib/api";
 
 interface Student {
   id: number;
@@ -13,47 +16,61 @@ interface Student {
 }
 
 export default function AttendanceContent(): ReactElement {
+  const { id } = useParams();
+  const { token } = useAuth();
+  const router = useRouter();
+  
   const [students, setStudents] = useState<Student[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
+  const [kelasName, setKelasName] = useState<string>("");
 
   const listRef = useRef<HTMLUListElement | null>(null);
-  const kelasName = "XII RPL 1";
 
   useEffect(() => {
     let mounted = true;
+    
     const load = async (): Promise<void> => {
+      if (!token || !id) return;
+      
       if (!mounted) return;
       setLoading(true);
       setFetchError(null);
 
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      if (!mounted) return;
-      const dummyStudents: Student[] = [
-        { id: 1, name: "Andi Pratama", status: "" },
-        { id: 2, name: "Budi Santoso", status: "" },
-        { id: 3, name: "Citra Dewi", status: "" },
-        { id: 4, name: "Dedi Gunawan", status: "" },
-        { id: 5, name: "Eka Lestari", status: "" },
-        { id: 6, name: "Fajar Nugroho", status: "" },
-        { id: 7, name: "Gita Rahma", status: "" },
-        { id: 8, name: "Hadi Ahadi", status: "" },
-        { id: 9, name: "Intan Puspita", status: "" },
-        { id: 10, name: "Joko Setiawan", status: "" },
-      ];
-      setStudents(dummyStudents);
-      setLoading(false);
+      try {
+        const res = await api.getStudentAttendance(token, id as string);
+        
+        if (!mounted) return;
+        
+        if (res.success && Array.isArray(res.data)) {
+          setStudents(res.data);
+          
+          if (res.data.length > 0) {
+            setKelasName(res.kelas_name || "");
+          }
+        } else {
+          setFetchError(res.message || "Gagal memuat data siswa");
+        }
+      } catch (error) {
+        console.error("Failed to fetch student attendance:", error);
+        if (mounted) {
+          setFetchError("Terjadi kesalahan saat memuat data");
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
     };
 
     void load();
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [token, id]);
 
   /** Scroll highlight */
   useEffect(() => {
@@ -99,12 +116,31 @@ export default function AttendanceContent(): ReactElement {
     });
   };
 
-  const handleSubmit = (): void => {
+  const handleSubmit = async (): Promise<void> => {
+    if (!token || !id) return;
+    
     setSubmitting(true);
-    setTimeout(() => {
-      alert("✅ Absensi tersimpan (dummy).");
+    
+    try {
+      const attendance = students.map(s => ({
+        student_id: s.id,
+        status: s.status
+      }));
+      
+      const res = await api.saveStudentAttendance(token, id as string, attendance);
+      
+      if (res.success) {
+        alert("Absensi berhasil disimpan");
+        router.back();
+      } else {
+        alert(res.message || "Gagal menyimpan absensi");
+      }
+    } catch (error) {
+      console.error("Failed to save attendance:", error);
+      alert("Terjadi kesalahan saat menyimpan absensi");
+    } finally {
       setSubmitting(false);
-    }, 1000);
+    }
   };
 
   const allDone = students.length > 0 && students.every((s) => s.status !== "");
@@ -117,15 +153,15 @@ export default function AttendanceContent(): ReactElement {
         <AttendanceButtons updateStatus={updateStatus} submitting={submitting} allDone={allDone} onSubmit={() => setConfirmOpen(true)} disabled={!allDone || submitting} />
       </main>
 
-      <ConfirmSave
-        isOpen={confirmOpen}
+      <ConfirmDialog
+        open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         onConfirm={() => {
           setConfirmOpen(false);
           handleSubmit();
         }}
         title="Simpan Absen?"
-        description="Pastikan semua status kehadiran siswa sudah benar. Lanjutkan menyimpan?"
+        message="Pastikan semua status kehadiran siswa sudah benar. Lanjutkan menyimpan?"
       />
     </div>
   );

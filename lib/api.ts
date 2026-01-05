@@ -60,6 +60,17 @@ export const api = {
     return res.json();
   },
 
+  // Get Kaldik (Academic Calendar)
+  async getKaldik(token: string) {
+    const res = await fetch(`${API_URL}/kaldik`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+      },
+    });
+    return res.json();
+  },
+
   // ========== GURU ATTENDANCE API ==========
   
   // Check-in Attendance (Absen Masuk)
@@ -70,7 +81,7 @@ export const api = {
     timestamp?: string;
     metode_absen?: string;
   }) {
-    console.log("🔵 API checkInAttendance - Data to send:", data);
+    console.log("API checkInAttendance - Data to send:", data);
     const res = await fetch(`${API_URL}/guru-attendance/check-in`, {
       method: 'POST',
       headers: {
@@ -81,7 +92,7 @@ export const api = {
       body: JSON.stringify(data),
     });
     const responseData = await res.json();
-    console.log("🔵 API checkInAttendance - Response:", responseData);
+    console.log("API checkInAttendance - Response:", responseData);
     return responseData;
   },
 
@@ -119,6 +130,56 @@ export const api = {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json',
       },
+    });
+    return res.json();
+  },
+
+  // Get Guru Schedule Detail
+  async getGuruScheduleDetail(token: string, scheduleId: string) {
+    const res = await fetch(`${API_URL}/guru-schedule/${scheduleId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+      },
+    });
+    return res.json();
+  },
+
+  // Finish Class (Selesaikan Kelas)
+  async finishClass(token: string, scheduleId: string, catatan: string) {
+    const res = await fetch(`${API_URL}/guru-schedule/${scheduleId}/finish`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ catatan, confirm: true }),
+    });
+    return res.json();
+  },
+
+  // Get Student Attendance List
+  async getStudentAttendance(token: string, jadwalId: string) {
+    const res = await fetch(`${API_URL}/student-attendance/${jadwalId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+      },
+    });
+    return res.json();
+  },
+
+  // Save Student Attendance
+  async saveStudentAttendance(token: string, jadwalId: string, attendance: Array<{student_id: number, status: string}>) {
+    const res = await fetch(`${API_URL}/student-attendance/${jadwalId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ attendance }),
     });
     return res.json();
   },
