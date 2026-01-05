@@ -4,6 +4,9 @@ import { ReactElement } from "react";
 import { usePathname } from "next/navigation";
 import { Home, Bell, Fingerprint, ClipboardCheck, User } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { api } from "@/lib/api";
+import useSWR from "swr";
 
 type Item = "home" | "info" | "absen" | "tinjau-izin" | "profile";
 
@@ -16,6 +19,20 @@ interface NavItem {
 
 export default function BottomNav(): ReactElement | null {
   const pathname = usePathname();
+  const { token } = useAuth();
+  
+  const { data: response } = useSWR(
+    token ? ["/pengumuman", token] : null,
+    ([, t]) => api.getAnnouncements(t),
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 60000,
+    }
+  );
+
+  const notificationCount = response?.success 
+    ? response.data.filter((ann: { is_active: boolean }) => ann.is_active).length 
+    : 0;
 
   // Sembunyikan pada halaman login
   if (typeof pathname === "string" && pathname.startsWith("/login")) return null;
@@ -39,9 +56,9 @@ export default function BottomNav(): ReactElement | null {
             <Link suppressHydrationWarning={true} key={it.id} href={it.href} className={`flex-1 flex flex-col items-center justify-center text-xs py-2 transition ${isActive ? "text-gray-900 font-semibold" : "text-gray-500 hover:text-gray-700"}`}>
               <div suppressHydrationWarning={true} className="relative">
                 {it.icon}
-                {it.id === "info" && (
+                {it.id === "info" && notificationCount > 0 && (
                   <span suppressHydrationWarning={true} className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
-                    3
+                    {notificationCount}
                   </span>
                 )}
               </div>

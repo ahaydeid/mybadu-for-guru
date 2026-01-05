@@ -49,12 +49,11 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
             >
               <h1 className="text-5xl font-extrabold tracking-tight">
                 <span className="text-[#8B2FFC]">My </span>
-                <span className="text-[#8B2FFC]">Badar</span>
+                <span className="text-zinc-900">Badar</span>
               </h1>
-              <div className="flex items-center justify-center space-x-2 mt-1">
-                <span className="text-3xl font-bold text-zinc-900">Badar</span>
-                <span className="text-3xl font-bold text-[#FF923E]">Edu</span>
-              </div>
+              <p className="text-sm font-bold text-zinc-400 uppercase tracking-[0.3em] mt-3">
+                FOR GURU
+              </p>
             </motion.div>
           </div>
 
@@ -64,8 +63,8 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
             transition={{ duration: 1, delay: 1.2 }}
             className="absolute bottom-12 text-center"
           >
-            <p className="text-lg text-zinc-600">
-              Powered by <span className="text-[#8B2FFC] font-bold">Hadi</span>
+            <p className="text-xs text-zinc-600">
+              Created by <span className="text-[#8B2FFC] font-bold">Hadi</span>
             </p>
           </motion.div>
         </motion.div>

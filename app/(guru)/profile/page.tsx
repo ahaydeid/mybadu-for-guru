@@ -2,13 +2,47 @@
 
 import { User, KeyRound, HelpCircle, LogOut, Settings, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { getImageUrl } from "@/lib/api";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
+import Toast from "../components/ui/Toast";
 
 const ProfilePage = () => {
   const router = useRouter();
+  const { user, logout, syncProfile } = useAuth();
+  
+  // State untuk ConfirmDialog
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  
+  // State untuk Toast
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
 
-  const handleLogout = () => {
-    alert("Anda telah logout (dummy).");
-    router.push("/login");
+  useEffect(() => {
+    syncProfile();
+  }, []);
+
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToastMessage(message);
+    setToastType(type);
+    setToastOpen(true);
+    setTimeout(() => setToastOpen(false), 2000);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      showToast("Logout berhasil!");
+      setTimeout(() => {
+        router.push("/login");
+      }, 1000);
+    } catch (error) {
+      showToast("Logout gagal. Silakan coba lagi.", "error");
+    }
+    setConfirmOpen(false);
   };
 
   const menus = [
@@ -34,13 +68,13 @@ const ProfilePage = () => {
       id: 5,
       name: "Bantuan",
       icon: <HelpCircle className="w-5 h-5 text-gray-600" />,
-      action: () => window.open("https://ahadi.my.id/chat/2712f917-65ba-4a55-9bce-4eb80e4ea7d9", "_blank"),
+      action: () => router.push("/profile/help"),
     },
     {
       id: 6,
       name: "Logout",
       icon: <LogOut className="w-5 h-5 text-red-600" />,
-      action: handleLogout,
+      action: () => setConfirmOpen(true),
     },
   ];
 
@@ -64,12 +98,43 @@ const ProfilePage = () => {
       <section className="relative w-full flex items-center justify-between bg-white border-b border-gray-200 py-3 px-4 md:px-10">
         {/* Info kiri */}
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-700 text-2xl font-bold">
-            <User className="w-8 h-8" />
+          <div className="w-16 h-16 bg-sky-600 rounded-full flex items-center justify-center text-white text-2xl font-bold uppercase overflow-hidden shrink-0">
+            {user?.guru?.foto && !imageError ? (
+              <img 
+                src={getImageUrl(user.guru.foto) || ""} 
+                alt={user.name}
+                className="w-full h-full object-cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              user?.name?.substring(0, 2) || <User className="w-8 h-8" />
+            )}
           </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Ahadi</h2>
-            <p className="text-sm text-gray-600">Coding</p>
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold text-gray-900 truncate">
+              {(() => {
+                const g = user?.guru;
+                const depan = g?.gelar_depan ? g.gelar_depan + " " : "";
+                const belakang = g?.gelar_belakang ? ", " + g.gelar_belakang : "";
+                return `${depan}${g?.nama || user?.name || "User"}${belakang}`;
+              })()}
+            </h2>
+            <p className="text-sm text-gray-600 truncate mb-1">
+              {(user?.guru?.mapel_diampu?.length ?? 0) > 0
+                ? user?.guru?.mapel_diampu?.map((m: any) => m.nama).join(", ")
+                : (user?.guru?.mengajar || user?.guru?.tugas_tambahan || "Guru")}
+            </p>
+            {/* Roles Badge */}
+            <div className="flex flex-wrap gap-1.5 pt-0.5">
+              {user?.roles?.map((role, idx) => (
+                <span 
+                  key={idx}
+                  className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200 uppercase tracking-tight"
+                >
+                  {role}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -87,6 +152,24 @@ const ProfilePage = () => {
           ))}
         </div>
       </main>
+
+      {/* Reusable Modals */}
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Logout"
+        message="Apakah Anda yakin ingin keluar dari aplikasi?"
+        confirmText="Ya, Logout"
+        cancelText="Batal"
+        variant="danger"
+        onConfirm={handleLogout}
+        onClose={() => setConfirmOpen(false)}
+      />
+
+      <Toast 
+        open={toastOpen} 
+        message={toastMessage} 
+        type={toastType} 
+      />
     </div>
   );
 };

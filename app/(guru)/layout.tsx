@@ -2,6 +2,7 @@
 
 import { ReactNode, useState, useEffect } from "react";
 import BottomNav from "./components/BottomNav";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export default function GuruLayout({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -16,9 +17,11 @@ export default function GuruLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div suppressHydrationWarning={true} className="min-h-screen flex flex-col bg-gray-50 dark:bg-zinc-900">
-      <main suppressHydrationWarning={true} className="flex-1">{children}</main>
-      <BottomNav />
-    </div>
+    <ProtectedRoute>
+      <div suppressHydrationWarning={true} className="min-h-screen flex flex-col bg-gray-50 dark:bg-zinc-900">
+        <main suppressHydrationWarning={true} className="flex-1">{children}</main>
+        <BottomNav />
+      </div>
+    </ProtectedRoute>
   );
 }
