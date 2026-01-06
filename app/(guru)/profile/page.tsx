@@ -81,17 +81,15 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-gray-50 w-full">
       {/* Header */}
-      <header className="sticky top-0 z-20 bg-white text-center text-2xl md:text-[22px] font-extrabold py-2 border-b border-gray-200 shadow-sm flex items-center justify-between px-4">
-        {/* Tombol Back */}
-        <button onClick={() => window.history.back()} className="text-gray-700 hover:text-sky-600 transition-colors" aria-label="Kembali">
-          <ArrowLeft className="w-6 h-6" />
+      <header className="sticky top-0 z-30 bg-white border-b border-gray-100 flex items-center px-4 py-3">
+        <button 
+          onClick={() => router.back()} 
+          className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-sky-600 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
         </button>
-
-        {/* Judul */}
-        <h1 className="flex-1 text-center">Profile</h1>
-
-        {/* Spacer kanan */}
-        <div className="w-6" />
+        <h1 className="flex-1 text-center text-base font-bold text-gray-900">Profil</h1>
+        <div className="w-8"></div>
       </header>
 
       {/* Profile summary */}
