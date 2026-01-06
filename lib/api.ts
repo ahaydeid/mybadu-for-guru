@@ -186,12 +186,15 @@ export const api = {
 
   // Get Attendance Config (Latitude, Longitude, Radius)
   async getAttendanceConfig(token: string) {
-    const res = await fetch(`${API_URL}/guru-attendance/config`, {
+    const url = `${API_URL}/guru-attendance/config`;
+    console.log("DEBUG - Fetching config from:", url);
+    const res = await fetch(url, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json',
       },
     });
+    console.log("DEBUG - Config response status:", res.status);
     return res.json();
   },
 };

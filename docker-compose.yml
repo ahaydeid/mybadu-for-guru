@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=https://suites.albadar.cloud/api
+      - NEXT_PUBLIC_API_URL=https://suites.albadar.cloud/api/v1
     networks:
       - proxy_network
 

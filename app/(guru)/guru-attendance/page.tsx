@@ -463,7 +463,16 @@ export default function AbsenGuruPage() {
 
 
 
-  if (!isLoadingData && jadwalHariIni.length === 0) {
+  if (isLoadingData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center">
+        <Loader2 className="w-10 h-10 animate-spin text-sky-600 mb-4" />
+        <p className="text-gray-500 font-medium animate-pulse">Memuat data absensi...</p>
+      </div>
+    );
+  }
+
+  if (jadwalHariIni.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center">
         <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-4">
