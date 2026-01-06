@@ -27,7 +27,7 @@ export default function AttendanceButtons({ updateStatus, submitting, allDone, o
           }`}
         >
           <Check className="w-5 h-5" />
-          {submitting ? "Menyimpan..." : "Selesai"}
+          {submitting ? "Menyimpan..." : "Simpan Absensi"}
         </button>
       </div>
     </>

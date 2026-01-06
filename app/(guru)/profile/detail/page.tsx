@@ -156,7 +156,7 @@ const ProfileDetailPage = () => {
               <DataRow icon={<Trophy className="w-4 h-4"/>} label="Gelar Belakang" value={user?.guru?.gelar_belakang} />
               <DataRow icon={<Info className="w-4 h-4"/>} label="Jenis Kelamin (jk)" value={user?.guru?.jk === "L" ? "Laki-laki" : user?.guru?.jk === "P" ? "Perempuan" : "-"} />
               <DataRow icon={<Fingerprint className="w-4 h-4"/>} label="NIK" value={user?.guru?.nik} />
-              <DataRow icon={<User className="w-4 h-4"/>} label="Kode Guru / Username" value={user?.username} />
+              <DataRow icon={<Fingerprint className="w-4 h-4"/>} label="Kode Guru" value={user?.guru?.kode_guru} />
               <DataRow icon={<Mail className="w-4 h-4"/>} label="Email Terdaftar" value={user?.email} />
             </div>
           )}
@@ -174,6 +174,7 @@ const ProfileDetailPage = () => {
               <DataRow icon={<Fingerprint className="w-4 h-4"/>} label="NUPTK" value={user?.guru?.nuptk} />
               <DataRow icon={<Briefcase className="w-4 h-4"/>} label="Status Kepegawaian" value={user?.guru?.status_kepegawaian} />
               <DataRow icon={<Trophy className="w-4 h-4"/>} label="Jenis PTK" value={user?.guru?.jenis_ptk} />
+              <DataRow icon={<Trophy className="w-4 h-4"/>} label="Sertifikasi" value={user?.guru?.sertifikasi} />
               <DataRow icon={<Calendar className="w-4 h-4"/>} label="TMT Kerja" value={formatDateIndo(user?.guru?.tmt_kerja)} />
             </div>
           )}
@@ -193,8 +194,18 @@ const ProfileDetailPage = () => {
                 } 
               />
               <DataRow icon={<Trophy className="w-4 h-4"/>} label="Tugas Tambahan" value={user?.guru?.tugas_tambahan} />
+              <DataRow icon={<Calendar className="w-4 h-4"/>} label="Jam Tugas Tambahan" value={user?.guru?.jam_tugas_tambahan} />
               <DataRow icon={<Calendar className="w-4 h-4"/>} label="JJM (Jam Mengajar)" value={user?.guru?.jjm} />
               <DataRow icon={<Calendar className="w-4 h-4"/>} label="Total JJM" value={user?.guru?.total_jjm} />
+              <div className="flex items-start gap-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors px-2">
+                <div className="text-gray-400 shrink-0 pt-0.5">
+                  <Info className="w-4 h-4"/>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Kompetensi</p>
+                  <p className="text-sm font-medium text-gray-900 whitespace-pre-wrap">{user?.guru?.kompetensi || "-"}</p>
+                </div>
+              </div>
             </div>
           )}
         </div>

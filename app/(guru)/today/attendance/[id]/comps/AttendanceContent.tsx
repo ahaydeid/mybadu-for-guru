@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import AttendanceHeader from "./AttendanceHeader";
 import AttendanceList from "./AttendanceList";
 import AttendanceButtons from "./AttendanceButtons";
+import Toast, { ToastType } from "@/app/(guru)/components/ui/Toast";
 import ConfirmDialog from "@/app/(guru)/components/ui/ConfirmDialog";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
@@ -27,6 +28,18 @@ export default function AttendanceContent(): ReactElement {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
   const [kelasName, setKelasName] = useState<string>("");
+
+  // Toast State
+  const [toast, setToast] = useState<{ open: boolean; message: string; type: ToastType }>({
+    open: false,
+    message: "",
+    type: "success",
+  });
+
+  const showToast = (message: string, type: ToastType = "success") => {
+    setToast({ open: true, message, type });
+    setTimeout(() => setToast((prev) => ({ ...prev, open: false })), 3000);
+  };
 
   const listRef = useRef<HTMLUListElement | null>(null);
 
@@ -130,20 +143,20 @@ export default function AttendanceContent(): ReactElement {
       const res = await api.saveStudentAttendance(token, id as string, attendance);
       
       if (res.success) {
-        alert("Absensi berhasil disimpan");
-        router.back();
+        showToast("Absensi berhasil disimpan", "success");
+        setTimeout(() => router.back(), 1500);
       } else {
-        alert(res.message || "Gagal menyimpan absensi");
+        showToast(res.message || "Gagal menyimpan absensi", "error");
       }
     } catch (error) {
       console.error("Failed to save attendance:", error);
-      alert("Terjadi kesalahan saat menyimpan absensi");
+      showToast("Terjadi kesalahan saat menyimpan absensi", "error");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const allDone = students.length > 0 && students.every((s) => s.status !== "");
+  const allDone = students.length > 0;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -155,14 +168,17 @@ export default function AttendanceContent(): ReactElement {
 
       <ConfirmDialog
         open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
+        onClose={() => !submitting && setConfirmOpen(false)}
         onConfirm={() => {
           setConfirmOpen(false);
           handleSubmit();
         }}
         title="Simpan Absen?"
         message="Pastikan semua status kehadiran siswa sudah benar. Lanjutkan menyimpan?"
+        loading={submitting}
       />
+
+      <Toast open={toast.open} message={toast.message} type={toast.type} />
     </div>
   );
 }

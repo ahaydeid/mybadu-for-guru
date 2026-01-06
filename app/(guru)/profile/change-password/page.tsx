@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import Toast, { ToastType } from "../../components/ui/Toast";
 
 const Page = () => {
   const router = useRouter();
@@ -13,6 +15,42 @@ const Page = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [toast, setToast] = useState<{ open: boolean; message: string; type: ToastType }>({
+    open: false,
+    message: "",
+    type: "success",
+  });
+
+  const showToast = (message: string, type: ToastType = "success") => {
+    setToast({ open: true, message, type });
+    setTimeout(() => setToast((prev) => ({ ...prev, open: false })), 3000);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      showToast("Semua field harus diisi", "error");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      showToast("Konfirmasi kata sandi tidak cocok", "error");
+      return;
+    }
+    setShowConfirm(true);
+  };
+
+  const handleConfirmSave = () => {
+    setIsLoading(true);
+    setShowConfirm(false);
+    setTimeout(() => {
+      setIsLoading(false);
+      showToast("Kata sandi berhasil diperbarui", "success");
+      setTimeout(() => router.back(), 2000);
+    }, 1500);
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -31,7 +69,7 @@ const Page = () => {
       <div className="px-4 py-6">
         <div className="bg-white w-full p-6">
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Kata sandi lama</label>
             <div className="relative">
@@ -92,12 +130,27 @@ const Page = () => {
             </div>
           </div>
 
-          <button type="submit" className="w-full mt-4 bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 rounded-full transition-all duration-200">
-            Simpan Perubahan
+          <button 
+            type="submit" 
+            disabled={isLoading}
+            className="w-full mt-4 bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 rounded-full transition-all duration-200 disabled:bg-gray-400"
+          >
+            {isLoading ? "Memproses..." : "Simpan Perubahan"}
           </button>
         </form>
         </div>
       </div>
+
+      <ConfirmDialog 
+        open={showConfirm}
+        title="Ganti Kata Sandi?"
+        message="Apakah Anda yakin ingin mengganti kata sandi? Anda akan diminta login ulang di perangkat lain."
+        onConfirm={handleConfirmSave}
+        onClose={() => setShowConfirm(false)}
+        loading={isLoading}
+      />
+
+      <Toast open={toast.open} message={toast.message} type={toast.type} />
     </div>
   );
 };

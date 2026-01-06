@@ -4,12 +4,25 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import Toast, { ToastType } from "../../components/ui/Toast";
 
 const ProfileEditPage = () => {
   const router = useRouter();
   const { user, syncProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<"identitas" | "kelahiran" | "kepegawaian" | "akademik">("identitas");
   const [loading, setLoading] = useState(false);
+
+  // Toast State
+  const [toast, setToast] = useState<{ open: boolean; message: string; type: ToastType }>({
+    open: false,
+    message: "",
+    type: "success",
+  });
+
+  const showToast = (message: string, type: ToastType = "success") => {
+    setToast({ open: true, message, type });
+    setTimeout(() => setToast((prev) => ({ ...prev, open: false })), 3000);
+  };
 
   useEffect(() => {
     syncProfile();
@@ -66,7 +79,7 @@ const ProfileEditPage = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      alert("Simulasi: Perubahan data sedang diproses oleh sistem.");
+      showToast("Perubahan data sedang diproses oleh sistem.", "success");
     }, 1500);
   };
 
@@ -169,6 +182,8 @@ const ProfileEditPage = () => {
           </div>
         </div>
       </main>
+
+      <Toast open={toast.open} message={toast.message} type={toast.type} />
     </div>
   );
 };

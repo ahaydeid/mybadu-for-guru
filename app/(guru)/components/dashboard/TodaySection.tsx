@@ -117,16 +117,14 @@ export default function TodaySection() {
                             </p>
 
                             <div className="flex items-center gap-2 mt-2">
-                                {item.status === "selesai" ? (
-                                    <span className="px-3 py-0.5 text-sm font-semibold rounded-full bg-green-700 text-white">
-                                        Selesai
-                                    </span>
-                                ) : (
-                                    <span className="px-3 py-0.5 text-sm rounded-full bg-amber-300 text-gray-900">
-                                        {item.waktuMulai} - {item.waktuAkhir}
-                                    </span>
-                                )}
-                                <span className="px-3 py-0.5 text-sm rounded-full bg-gray-700 text-white">
+                                <span className={`px-3 py-0.5 text-xs font-semibold rounded-full ${
+                                    item.status === "selesai" 
+                                        ? "bg-green-600 text-white" 
+                                        : "bg-amber-300 text-gray-900"
+                                }`}>
+                                    {item.waktuMulai} - {item.waktuAkhir}
+                                </span>
+                                <span className="px-3 py-0.5 text-xs font-semibold rounded-full bg-gray-700 text-white">
                                     {item.jp}
                                 </span>
                             </div>
