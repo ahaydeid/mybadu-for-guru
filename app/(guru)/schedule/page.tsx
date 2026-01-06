@@ -29,7 +29,14 @@ const toMinutes = (time: string | null): number => {
 
 export default function Page(): React.ReactElement {
   const { token } = useAuth();
-  const [days, setDays] = useState<DayRow[]>([]);
+  const [days, setDays] = useState<DayRow[]>([
+    { id: 1, nama: "Senin" },
+    { id: 2, nama: "Selasa" },
+    { id: 3, nama: "Rabu" },
+    { id: 4, nama: "Kamis" },
+    { id: 5, nama: "Jumat" },
+    { id: 6, nama: "Sabtu" },
+  ]);
   const [jadwals, setJadwals] = useState<RawJadwal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,10 +52,30 @@ export default function Page(): React.ReactElement {
 
       try {
         const result = await api.getGuruSchedule(token);
+        console.log("DEBUG - getGuruSchedule result:", result);
         
         if (mounted && result.success && result.data) {
-          setDays(result.data.days || []);
-          setJadwals(result.data.jadwals || []);
+          if (Array.isArray(result.data)) {
+            console.log("DEBUG - Received array of schedules, mapping to current day");
+            // API returns flat array of today's schedule
+            const todayIdx = new Date().getDay(); // 0-6
+            const todayId = todayIdx === 0 ? 0 : todayIdx; // Map to ID (assuming 1=Senin, etc.)
+            
+            const mapped = result.data.map((item: any) => ({
+              id: item.id,
+              hari_id: todayId,
+              kelas: { nama: item.jurusan || item.kelas_name },
+              jamPertama: item.kodeMulai,
+              jamKedua: item.kodeSelesai,
+              jamMulai: item.waktuMulai,
+              jamSelesai: item.waktuAkhir,
+              jp: item.jp
+            }));
+            setJadwals(mapped);
+          } else {
+            if (result.data.days) setDays(result.data.days);
+            setJadwals(result.data.jadwals || []);
+          }
         } else if (mounted && !result.success) {
           setError(result.message || "Gagal memuat jadwal");
         }

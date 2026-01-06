@@ -79,13 +79,15 @@ const ProfileDetailPage = () => {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <h1 className="flex-1 text-center text-base font-bold text-gray-900">Detail Profil</h1>
-        <button 
-          onClick={() => router.push("/profile/edit")}
-          className="flex items-center gap-1.5 px-3 py-1 text-xs text-white rounded-lg font-bold bg-sky-600 hover:bg-sky-700 transition-colors uppercase tracking-tight"
-        >
-          <Edit3 className="w-3.5 h-3.5" />
-          <span>Perbarui</span>
-        </button>
+        {user?.can_edit_profile != 0 && (
+          <button 
+            onClick={() => router.push("/profile/edit")}
+            className="flex items-center gap-1.5 px-3 py-1 text-xs text-white rounded-lg font-bold bg-sky-600 hover:bg-sky-700 transition-colors uppercase tracking-tight"
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+            <span>Perbarui</span>
+          </button>
+        )}
       </header>
 
       {/* Hero Profile - Simple */}
@@ -113,7 +115,7 @@ const ProfileDetailPage = () => {
           </h2>
           <p className="text-sm text-gray-600 mt-0.5 mb-2">
             {(user?.guru?.mapel_diampu?.length ?? 0) > 0
-              ? user?.guru?.mapel_diampu?.map((m: any) => m.nama).join(", ")
+              ? Array.from(new Set(user?.guru?.mapel_diampu?.map((m: any) => m.nama))).join(", ")
               : (user?.guru?.mengajar || user?.guru?.tugas_tambahan || "Guru")}
           </p>
           <div className="flex flex-wrap gap-1.5 pt-0.5">
@@ -189,7 +191,7 @@ const ProfileDetailPage = () => {
                 label="Mapel Diampu (Dinamis)" 
                 value={
                   (user?.guru?.mapel_diampu?.length ?? 0) > 0
-                    ? user?.guru?.mapel_diampu?.map((m: any) => m.nama).join(", ")
+                    ? Array.from(new Set(user?.guru?.mapel_diampu?.map((m: any) => m.nama))).join(", ")
                     : "-"
                 } 
               />

@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import Toast, { ToastType } from "../../components/ui/Toast";
+import { useAuth } from "@/context/AuthContext";
+import { api } from "@/lib/api";
 
 const Page = () => {
   const router = useRouter();
+  const { token } = useAuth();
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -42,14 +45,33 @@ const Page = () => {
     setShowConfirm(true);
   };
 
-  const handleConfirmSave = () => {
+  const handleConfirmSave = async () => {
+    if (!token) return;
     setIsLoading(true);
     setShowConfirm(false);
-    setTimeout(() => {
+
+    try {
+      const res = await api.updatePassword(token, {
+        current_password: oldPassword,
+        new_password: newPassword,
+        new_password_confirmation: confirmPassword
+      });
+
+      if (res.success) {
+        showToast("Kata sandi berhasil diperbarui", "success");
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setTimeout(() => router.back(), 2000);
+      } else {
+        showToast(res.message || "Gagal memperbarui kata sandi", "error");
+      }
+    } catch (error) {
+      console.error("Update password error:", error);
+      showToast("Terjadi kesalahan sistem", "error");
+    } finally {
       setIsLoading(false);
-      showToast("Kata sandi berhasil diperbarui", "success");
-      setTimeout(() => router.back(), 2000);
-    }, 1500);
+    }
   };
 
   return (

@@ -197,6 +197,34 @@ export const api = {
     console.log("DEBUG - Config response status:", res.status);
     return res.json();
   },
+
+  // Update Password
+  async updatePassword(token: string, data: any) {
+    const res = await fetch(`${API_URL}/profile/change-password`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  },
+
+  // Update Profile
+  async updateProfile(token: string, formData: FormData) {
+    const res = await fetch(`${API_URL}/profile/update`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+        // Content-Type header is not needed for FormData, fetch adds it automatically with boundary
+      },
+      body: formData,
+    });
+    return res.json();
+  },
 };
 export const getImageUrl = (path: string | null | undefined) => {
   if (!path) return null;

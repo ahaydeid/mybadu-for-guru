@@ -132,7 +132,7 @@ export default function AnnouncementDetailPage() {
 
         <div className="w-12 h-1 bg-sky-500 rounded-full mb-8"></div>
 
-        <article className="prose prose-sm max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap">
+        <article className="prose prose-sm max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap text-justify">
             {announcement.isi}
         </article>
 

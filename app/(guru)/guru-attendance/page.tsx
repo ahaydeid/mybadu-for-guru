@@ -572,17 +572,17 @@ export default function AbsenGuruPage() {
         </div>
 
         {/* STICKY BOTTOM ACTIONS */}
-        <div suppressHydrationWarning={true} className="fixed bottom-[60px] left-0 right-0 z-30 pb-6 pt-4">
-          <div suppressHydrationWarning={true} className="w-full space-y-4">
+        <div suppressHydrationWarning={true} className="fixed bottom-[55px] left-0 right-0 z-30 pb-2 pt-2 bg-gradient-to-t from-gray-50 to-transparent">
+          <div suppressHydrationWarning={true} className="w-full space-y-3">
             
             {/* LOCATION & CAMERA */}
             <div suppressHydrationWarning={true} className="flex gap-2 px-4">
               <button
                 suppressHydrationWarning={true}
                 onClick={handleDetectLocation}
-                disabled={isDetecting}
+                disabled={isDetecting || (waktuKeluar !== "" && waktuKeluar !== null)}
                 className={`flex-1 font-bold py-3 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm ${
-                  isDetecting
+                  isDetecting || (waktuKeluar !== "" && waktuKeluar !== null)
                     ? "bg-gray-300 cursor-not-allowed text-white"
                     : "bg-[#009BFF] hover:bg-sky-600 text-white"
                 }`}

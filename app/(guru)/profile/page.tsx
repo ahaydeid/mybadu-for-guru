@@ -121,7 +121,7 @@ const ProfilePage = () => {
             </h2>
             <p className="text-sm text-gray-600 truncate mb-1">
               {(user?.guru?.mapel_diampu?.length ?? 0) > 0
-                ? user?.guru?.mapel_diampu?.map((m: any) => m.nama).join(", ")
+                ? Array.from(new Set(user?.guru?.mapel_diampu?.map((m: any) => m.nama))).join(", ")
                 : (user?.guru?.mengajar || user?.guru?.tugas_tambahan || "Guru")}
             </p>
             {/* Roles Badge */}

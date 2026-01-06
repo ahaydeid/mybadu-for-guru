@@ -10,6 +10,7 @@ interface User {
   email?: string;
   roles: string[];
   guru?: any;
+  can_edit_profile?: boolean | number;
 }
 
 interface AuthContextType {
@@ -51,7 +52,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const result = await api.getProfile(activeToken);
       if (result.success) {
         // Handle potentially nested user object from API
-        const userData = result.data.user || result.data;
+        let userData = result.data.user || result.data;
+
+        // Try to capture can_edit_profile if it's a sibling in result.data
+        if (result.data?.can_edit_profile !== undefined) {
+           userData = { ...userData, can_edit_profile: result.data.can_edit_profile };
+        }
+
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
       }

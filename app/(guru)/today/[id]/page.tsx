@@ -211,7 +211,7 @@ export default function TodayPage() {
                   <button className="block w-[50%] cursor-not-allowed opacity-70">
                     <span className="flex items-center justify-center gap-2 rounded-md py-3 px-1 shadow font-bold text-lg text-white transition bg-gray-400">
                       <PlusCircle className="w-5 h-5 shrink-0" />
-                      Tambah Nilai
+                      Nilai
                     </span>
                   </button>
                 </div>
@@ -245,7 +245,7 @@ export default function TodayPage() {
             ) : (
               <div className="flex gap-3">
                 {/* Tombol Buka Absen */}
-                <Link href={`/today/attendance/${data.id}`} className="flex-1 block">
+                <Link href={`/today/attendance/${data.id}?className=${encodeURIComponent(data.title)}`} className="flex-1 block">
                   <span className="block bg-sky-500 text-white font-extrabold text-lg rounded py-3 text-center">Buka Absen</span>
                 </Link>
 
@@ -286,12 +286,13 @@ export default function TodayPage() {
             <label className="block text-gray-700 font-semibold mb-1">Catatan:</label>
             <div className="bg-white p-1 border border-gray-200 rounded">
               <textarea 
-                className="w-full rounded focus:outline-none" 
+                className={`w-full rounded focus:outline-none ${isChecked ? 'bg-gray-50 text-gray-600 cursor-not-allowed' : ''}`}
                 rows={3} 
-                placeholder="Tambahkan catatan kelas hari ini..." 
+                placeholder={isChecked ? "Catatan sudah tersimpan" : "Tambahkan catatan kelas hari ini..."}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 maxLength={150}
+                disabled={isChecked}
               />
               <div className="text-right text-xs text-gray-500 mt-[-8]">{notes.length}/150</div>
             </div>

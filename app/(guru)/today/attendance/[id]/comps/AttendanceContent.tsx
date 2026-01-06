@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactElement, useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import AttendanceHeader from "./AttendanceHeader";
 import AttendanceList from "./AttendanceList";
 import AttendanceButtons from "./AttendanceButtons";
@@ -20,6 +20,8 @@ export default function AttendanceContent(): ReactElement {
   const { id } = useParams();
   const { token } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const fallbackClassName = searchParams.get("className") || "Kelas Kosong";
   
   const [students, setStudents] = useState<Student[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -27,7 +29,7 @@ export default function AttendanceContent(): ReactElement {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
-  const [kelasName, setKelasName] = useState<string>("");
+  const [kelasName, setKelasName] = useState<string>(fallbackClassName);
 
   // Toast State
   const [toast, setToast] = useState<{ open: boolean; message: string; type: ToastType }>({
@@ -58,19 +60,22 @@ export default function AttendanceContent(): ReactElement {
         
         if (!mounted) return;
         
-        if (res.success && Array.isArray(res.data)) {
+        if (res && res.success && Array.isArray(res.data)) {
           setStudents(res.data);
           
           if (res.data.length > 0) {
-            setKelasName(res.kelas_name || "");
+            setKelasName(res.kelas_name || fallbackClassName);
+          } else {
+            console.warn("API returned empty student list");
+            setKelasName(res.kelas_name || fallbackClassName);
           }
         } else {
-          setFetchError(res.message || "Gagal memuat data siswa");
+          setFetchError(res?.message || "Gagal memuat data siswa. Pastikan data siswa sudah terhubung ke kelas.");
         }
       } catch (error) {
         console.error("Failed to fetch student attendance:", error);
         if (mounted) {
-          setFetchError("Terjadi kesalahan saat memuat data");
+          setFetchError("Terjadi kesalahan sistem (Server Error). Silakan hubungi admin.");
         }
       } finally {
         if (mounted) {
