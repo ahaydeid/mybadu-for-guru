@@ -1,0 +1,57 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        env:
+          NEXT_PUBLIC_API_URL: https://suites.albadar.cloud/api/v1
+        run: npm run build
+
+      - name: Prepare deployment package
+        run: |
+          tar -czf deploy.tar.gz .next/standalone .next/static public Dockerfile docker-compose.yml .env.production
+
+      - name: Upload to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "deploy.tar.gz"
+          target: "/srv/apps/mobile-guru/"
+
+      - name: Execute remote commands
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /srv/apps/mobile-guru
+            # Clean up old files to avoid structure mismatch
+            rm -rf .next public
+            tar -xzf deploy.tar.gz
+            rm deploy.tar.gz
+            docker compose up -d --build
