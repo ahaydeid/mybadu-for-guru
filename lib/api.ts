@@ -1,4 +1,9 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const getApiUrl = () => {
+  const url = process.env.NEXT_PUBLIC_API_URL || 'https://suites.albadar.cloud/api/v1';
+  return url;
+};
+
+const API_URL = getApiUrl();
 
 export const api = {
   // Login
