@@ -4,6 +4,8 @@ import React, { useEffect, useState, useMemo } from "react";
 import JadwalHariCard from "./comps/JadwalHariCard";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type DayRow = { id: number; nama: string };
 
@@ -28,15 +30,9 @@ const toMinutes = (time: string | null): number => {
 };
 
 export default function Page(): React.ReactElement {
+  const router = useRouter();
   const { token } = useAuth();
-  const [days, setDays] = useState<DayRow[]>([
-    { id: 1, nama: "Senin" },
-    { id: 2, nama: "Selasa" },
-    { id: 3, nama: "Rabu" },
-    { id: 4, nama: "Kamis" },
-    { id: 5, nama: "Jumat" },
-    { id: 6, nama: "Sabtu" },
-  ]);
+  const [days, setDays] = useState<DayRow[]>([]);
   const [jadwals, setJadwals] = useState<RawJadwal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,30 +47,17 @@ export default function Page(): React.ReactElement {
       setError(null);
 
       try {
-        const result = await api.getGuruSchedule(token);
-        console.log("DEBUG - getGuruSchedule result:", result);
+        // Fetch weekly schedule using new API parameter
+        const result = await api.getGuruSchedule(token, true);
+        console.log("DEBUG - getGuruSchedule (weekly) result:", result);
         
         if (mounted && result.success && result.data) {
-          if (Array.isArray(result.data)) {
-            console.log("DEBUG - Received array of schedules, mapping to current day");
-            // API returns flat array of today's schedule
-            const todayIdx = new Date().getDay(); // 0-6
-            const todayId = todayIdx === 0 ? 0 : todayIdx; // Map to ID (assuming 1=Senin, etc.)
-            
-            const mapped = result.data.map((item: any) => ({
-              id: item.id,
-              hari_id: todayId,
-              kelas: { nama: item.jurusan || item.kelas_name },
-              jamPertama: item.kodeMulai,
-              jamKedua: item.kodeSelesai,
-              jamMulai: item.waktuMulai,
-              jamSelesai: item.waktuAkhir,
-              jp: item.jp
-            }));
-            setJadwals(mapped);
-          } else {
-            if (result.data.days) setDays(result.data.days);
-            setJadwals(result.data.jadwals || []);
+          // Weekly API returns { days: [], jadwals: [] }
+          if (result.data.days) {
+            setDays(result.data.days);
+          }
+          if (result.data.jadwals) {
+            setJadwals(result.data.jadwals);
           }
         } else if (mounted && !result.success) {
           setError(result.message || "Gagal memuat jadwal");
@@ -94,7 +77,7 @@ export default function Page(): React.ReactElement {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [token]);
 
   const jadwalMap = useMemo(() => {
     const map = new Map<number, RawJadwal[]>();
@@ -113,10 +96,20 @@ export default function Page(): React.ReactElement {
   }, [jadwals]);
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] pb-28">
-      <h1 className="sticky top-0 z-20 bg-gray-50 text-center text-2xl font-extrabold py-3 mb-4 border-b border-gray-200">Jadwal Mengajar</h1>
+    <div className="min-h-screen bg-[#f5f5f5] pb-20">
+      <div className="sticky top-0 z-20 bg-white border-b border-gray-200">
+        <div className="flex items-center px-4 py-3 relative">
+          <button
+            onClick={() => router.back()}
+            className="p-1 hover:bg-gray-100 rounded-lg transition-colors absolute left-4"
+          >
+            <ChevronLeft className="w-6 h-6 text-gray-700" />
+          </button>
+          <h1 className="text-xl font-bold text-gray-900 w-full text-center">Jadwal Mengajar</h1>
+        </div>
+      </div>
 
-      <div className="mx-auto w-full px-4 max-w-xl md:max-w-2xl lg:max-w-3xl">
+      <div className="mx-auto w-full px-2 max-w-xl md:max-w-2xl pt-2 lg:max-w-3xl">
         {loading ? (
           <div className="text-center text-gray-500">Memuat jadwal...</div>
         ) : error ? (

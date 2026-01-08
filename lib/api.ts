@@ -124,13 +124,31 @@ export const api = {
   },
 
   // Get Guru Schedule (Semester Aktif)
-  async getGuruSchedule(token: string) {
-    const res = await fetch(`${API_URL}/guru-schedule`, {
+  // Pass weekly=true to get full week schedule, otherwise returns today's schedule only
+  async getGuruSchedule(token: string, weekly: boolean = false) {
+    const url = weekly 
+      ? `${API_URL}/guru-schedule?week=true`
+      : `${API_URL}/guru-schedule`;
+    
+    const res = await fetch(url, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json',
       },
     });
+    return res.json();
+  },
+
+  async getAttendanceLog(token: string, startDate: string, endDate: string) {
+    const res = await fetch(
+      `${API_URL}/guru-attendance/log?start_date=${startDate}&end_date=${endDate}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
+      }
+    );
     return res.json();
   },
 

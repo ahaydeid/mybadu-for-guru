@@ -15,15 +15,9 @@ export default function MenuSection() {
     { title: "Jadwal", icon: <Calendar className="w-7 h-7 text-amber-500" />, href: "/schedule", bgColor: "bg-amber-50" },
     { title: "Kelas", icon: <BookOpen className="w-7 h-7 text-sky-600" />, href: "/kelas", bgColor: "bg-sky-50" },
     { 
-      title: "Absen Mapel",
-      icon: <BookOpen className="w-7 h-7 text-blue-600" />,
-      href: "/log-absen-mapel",
-      bgColor: "bg-blue-50"
-    },
-    { 
-      title: "Absen Kelas",
+      title: "Kelas Binaan",
       icon: <Users className="w-7 h-7 text-emerald-600" />,
-      href: "/log-absen-kelas",
+      href: "/kelas-binaan",
       bgColor: "bg-emerald-50"
     },
     { 

@@ -7,8 +7,10 @@ import CalendarGrid from "./comps/CalendarGrid";
 import { CalendarEvent } from "./comps/AgendaModal";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+    const router = useRouter();
     const { token } = useAuth();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -41,14 +43,20 @@ export default function Page() {
 
     return (
         <>
-            <section className="w-full min-h-screen px-4 md:px-24 pt-6 pb-20">
-                <div>
-                    <div className="flex items-center justify-center mb-10">
-                        <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
-                            Kalender Akademik
-                        </h1>
+            <section className="w-full min-h-screen px-4 md:px-24 pt-3 pb-20">
+                <div className="sticky top-0 z-20 bg-white border-b border-gray-200 mb-4 -mx-4 md:-mx-24 px-4 md:px-24">
+                    <div className="flex items-center py-3 relative">
+                        <button
+                            onClick={() => router.back()}
+                            className="p-1 hover:bg-gray-100 rounded-lg transition-colors absolute left-0"
+                        >
+                            <ChevronLeft className="w-6 h-6 text-gray-700" />
+                        </button>
+                        <h1 className="text-xl font-bold text-gray-900 w-full text-center">Kalender Akademik</h1>
                     </div>
+                </div>
 
+                <div>
                     <div className="flex items-center justify-end gap-2 mb-4">
                         <button
                             onClick={prevMonth}
